@@ -4,6 +4,7 @@
 
 
 [➡️ Click here to open the Postman workspace](https://www.postman.com/whiskeyprincess/workspace/portfolio-paulina)
+
 [🇬🇧 English](#-english-version) | [🇵🇱 Polski](#-wersja-polska)
 
 ---
@@ -49,7 +50,7 @@ Portfolio Paulina (Postman Workspace)
     ├── Users
     ├── Authentication
     └── Resources
-
+```
 --- 
 
 ## 🧪 Example Test – ensure uniqueness of language names and urls in genera
