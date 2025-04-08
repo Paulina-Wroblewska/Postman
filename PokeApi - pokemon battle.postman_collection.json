@@ -1,0 +1,320 @@
+{
+	"info": {
+		"_postman_id": "562c6e72-03d8-49f9-a681-36282c53bd83",
+		"name": "PokeApi - pokemon battle",
+		"description": "**ENG:**\n\nIt is a single query in which we simulate a battle between two Pokémon and then determine the winner based on a simple scoring system. We also visually present information about the battle. Each time the request is run, different Pokémon are selected.\n\n**PL:**\n\nJest to jedno zapytanie w ramach którego przeprowadzamy symulowaną walkę dwóch pokemonów, a następnie na podstawie prostej punktacji wyłaniamy zwycięzcę. Pokazując również wizualizacyjnie informacje odnośnie tej walki. Za każdym wysłaniem requestu są ponownie losowane Pokemony.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31286260",
+		"_collection_link": "https://www.postman.com/whiskeyprincess/workspace/portfolio-paulina/collection/31286260-562c6e72-03d8-49f9-a681-36282c53bd83?action=share&source=collection_link&creator=31286260"
+	},
+	"item": [
+		{
+			"name": "Pokemon Battle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// === 1. GET POKÉMON DATA FROM RESPONSE AND VARIABLES ===\r",
+							"const response = pm.response.json()\r",
+							"let pointsA = 0\r",
+							"let pointsB = 0\r",
+							"\r",
+							"let nameB = pm.collectionVariables.get(\"nameB\")\r",
+							"nameB = nameB.charAt(0).toUpperCase() + nameB.slice(1).toLowerCase()\r",
+							"let nameA = response.name\r",
+							"nameA = nameA.charAt(0).toUpperCase() + nameA.slice(1).toLowerCase()\r",
+							"const urlB = pm.collectionVariables.get(\"urlB\")\r",
+							"const urlA = response.sprites.other[\"official-artwork\"].front_default\r",
+							"\r",
+							"// === 2. EXTRACT STATS FOR BOTH POKÉMONS ===\r",
+							"const hpB = pm.collectionVariables.get(\"hpB\")\r",
+							"const attackB = pm.collectionVariables.get(\"attackB\")\r",
+							"const defenseB = pm.collectionVariables.get(\"defenceB\")\r",
+							"const special_attackB = pm.collectionVariables.get(\"special_attackB\")\r",
+							"const special_defenseB = pm.collectionVariables.get(\"special_defenceB\")\r",
+							"const speedB = pm.collectionVariables.get(\"speedB\")\r",
+							"const hpA = response.stats[0].base_stat\r",
+							"const attackA = response.stats[1].base_stat\r",
+							"const defenseA = response.stats[2].base_stat\r",
+							"const special_attackA = response.stats[3].base_stat\r",
+							"const special_defenceA = response.stats[4].base_stat\r",
+							"const speedA = response.stats[5].base_stat \r",
+							"\r",
+							"\r",
+							"// === 3. CALCULATE POINTS BASED ON STATS ===\r",
+							"if(hpB > hpA ) {\r",
+							"    pointsB++\r",
+							"} else if (hpA > hpB) {\r",
+							"    pointsA ++ \r",
+							"}\r",
+							"\r",
+							"if(attackB > attackA ) {\r",
+							"    pointsB++\r",
+							"} else if (attackA > attackB) {\r",
+							"    pointsA ++ \r",
+							"}\r",
+							"\r",
+							"if(defenseB > defenseA ) {\r",
+							"    pointsB++\r",
+							"} else if (defenseA > defenseB) {\r",
+							"    pointsA ++ \r",
+							"}\r",
+							"\r",
+							"if(special_attackB > special_attackA ) {\r",
+							"    pointsB++\r",
+							"} else if (special_attackA > special_attackB) {\r",
+							"    pointsA ++ \r",
+							"}\r",
+							"\r",
+							"if(special_defenseB > special_defenceA ) {\r",
+							"    pointsB++\r",
+							"} else if (special_defenceA > special_defenseB) {\r",
+							"    pointsA ++ \r",
+							"}\r",
+							"\r",
+							"if(speedB > speedA ) {\r",
+							"    pointsB++\r",
+							"} else if (speedA > speedB) {\r",
+							"    pointsA ++ \r",
+							"}\r",
+							"\r",
+							"// === 4. LOGICAL TESTS ===\r",
+							"pm.test(\"Points are within valid range\", () => {\r",
+							"    pm.expect(pointsA).to.be.within(0, 6)\r",
+							"    pm.expect(pointsB).to.be.within(0, 6)\r",
+							"    pm.expect(pointsA + pointsB).to.be.within(0, 6)\r",
+							"});\r",
+							"\r",
+							"// === 5. DETERMINE WINNER ===\r",
+							"let winner \r",
+							"if (pointsA > pointsB) {\r",
+							"    winner = 'Winner is ' + nameA\r",
+							"} else if (pointsB > pointsA) {\r",
+							"    winner = 'Winner is ' + nameB\r",
+							"} else { \r",
+							"    winner = \"It's a tie\"\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Winner is declared properly\", () => {\r",
+							"    const expectedWinners = [`Winner is ${nameA}`, `Winner is ${nameB}`, `It's a tie`];\r",
+							"    pm.expect(winner).to.be.oneOf(expectedWinners);\r",
+							"});\r",
+							"\r",
+							"// === 6. HTML VISUALIZER TEMPLATE ===\r",
+							"const template =  `\r",
+							"\t<style type =\"text/css\">\r",
+							"    body{\r",
+							"        background:pink;\r",
+							"    }\r",
+							"    h1 {\r",
+							"        text-align:center;\r",
+							"\t\tfont-size: 48px;\r",
+							"    }\r",
+							"    h2 {\r",
+							"        text-align:center;\r",
+							"        color: red;\r",
+							"        font-size:40px;\r",
+							"    }\r",
+							"    #name {\r",
+							"        text-align:center;\r",
+							"        word-spacing: 100px;\r",
+							"    }\r",
+							"    #winner {\r",
+							"        text-align:center;\r",
+							"        font-size:35px;\r",
+							"    }\r",
+							"    #imagi {\r",
+							"        text-align:center;\r",
+							"    }\r",
+							"\t</style> \r",
+							"\r",
+							"\t<div id=\"container\"> \r",
+							"\t<h1> Battle {{pokemonA}} and {{pokemonB}} </h1>\r",
+							"    <h2> {{pointsA}} : {{pointsB}} </h2> \r",
+							"    <p id='winner'> {{winner}} </p>\r",
+							"    <p id='name'> {{pokemonA}} vs {{pokemonB}}</p>\r",
+							"    <div id=imagi> \r",
+							"        <img src='{{urlA}}' alt=\"pokemonA\">\r",
+							"        <img src='{{urlB}}' alt=\"pokemonB\">\r",
+							"    </div>\r",
+							"\t</div>\r",
+							"`\r",
+							"\r",
+							"// Set visualizer\r",
+							"pm.visualizer.set(template , {\r",
+							"\tpokemonA:nameA,\r",
+							"    pokemonB:nameB,\r",
+							"    pointsA:pointsA,\r",
+							"    pointsB:pointsB,\r",
+							"    winner:winner,\r",
+							"    urlA:urlA,\r",
+							"    urlB:urlB\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//=== 1. GET TOTAL NUMBER OF POKÉMON ===\r",
+							"pm.sendRequest({\r",
+							"    url:'https://pokeapi.co/api/v2/pokemon',\r",
+							"    method:'get',\r",
+							"},(err,res) => {\r",
+							"    const response = res.json()\r",
+							"\t\tconst amountPokemon = response.count\r",
+							"\t\tpm.collectionVariables.set('amountPokemon', amountPokemon)\r",
+							"})\r",
+							"// === 2. DRAW TWO UNIQUE POKÉMON IDs ===\r",
+							"const amountPokemon = pm.collectionVariables.get('amountPokemon')\r",
+							"let pokemonIdA = Math.floor(Math.random() * amountPokemon) + 1;\r",
+							"let pokemonIdB = Math.floor(Math.random() * amountPokemon) + 1;\r",
+							"\r",
+							"//=== 3. HANDLE SPECIAL OFFSET FOR IDs > 1025 ===\r",
+							"while(pokemonIdA === pokemonIdB) {\r",
+							"\tpokemonIdB = Math.floor(Math.random() *amountPokemon) + 1\r",
+							"}\r",
+							"if(pokemonIdA >1025) {\r",
+							"\tpokemonIdA = pokemonIdA + 8976\r",
+							"}\r",
+							"if(pokemonIdB >1025) {\r",
+							"\tpokemonIdB = pokemonIdB + 8976\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Both Pokémon IDs are different\", () => {\r",
+							"    pm.expect(pokemonIdA).to.not.eql(pokemonIdB)\r",
+							"});\r",
+							"\r",
+							"// == 4. Save ID pokemon ==\r",
+							"pm.collectionVariables.set('pokemonIdA', pokemonIdA)\r",
+							"pm.collectionVariables.set('pokemonIdB', pokemonIdB)\r",
+							"\r",
+							"// === 4. FETCH DATA FOR POKÉMON B ===\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"\turl: `https://pokeapi.co/api/v2/pokemon/${pm.variables.get(\"pokemonIdB\")}`,\r",
+							"\tmethod:'GET'\r",
+							"}, (err,res) => {\r",
+							"\tconst response = res.json()\r",
+							"\tconst hp = response.stats[0].base_stat\r",
+							"\tconst attack = response.stats[1].base_stat\r",
+							"\tconst defense = response.stats[2].base_stat\r",
+							"\tconst special_attack = response.stats[3].base_stat\r",
+							"\tconst special_defence = response.stats[4].base_stat\r",
+							"\tconst speed = response.stats[5].base_stat\r",
+							"\tconst name = response.name\r",
+							"\tconst url = response.sprites.other[\"official-artwork\"].front_default\r",
+							"// === 5. STORE ALL POKÉMON B STATS AND INFO TO VARIABLES ===\r",
+							"\tpm.collectionVariables.set(\"hpB\", hp);\r",
+							"\tpm.collectionVariables.set(\"attackB\", attack);\r",
+							"\tpm.collectionVariables.set(\"defenseB\", defense);\r",
+							"\tpm.collectionVariables.set(\"special_attackB\", special_attack);\r",
+							"\tpm.collectionVariables.set(\"special_defenceB\", special_defence);\r",
+							"\tpm.collectionVariables.set(\"speedB\", speed);\r",
+							"\tpm.collectionVariables.set(\"nameB\", name)\r",
+							"\tpm.collectionVariables.set(\"urlB\",url)\r",
+							"})\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}pokemon/{{pokemonIdA}}",
+					"host": [
+						"{{BaseUrl}}pokemon"
+					],
+					"path": [
+						"{{pokemonIdA}}"
+					]
+				},
+				"description": "**ENG:**\n\nBefore executing the query, we first send a request to get a list of Pokémon to determine the total number of available Pokémon. Then, we randomly select two unique Pokémon IDs. Next, still in the pre-script, we retrieve the necessary information about Pokémon B and store it in collection variables.\n\nAfter executing the query, we extract information about Pokémon A from the response, while the details of Pokémon B come from the stored collection variables. Using a simple algorithm, we assign points to the Pokémon and determine the winner. Finally, we present basic battle details in a simple visual representation.\n\n**PL:**\n\nZanim wykona się zapytanie, wysyłamy zapytanie odnośnie listy pokemonów w celu poznania ilości wszystkich pokemonów. Następnie losujemy dwa unikalne ID pokemonów. Aby następnie nadal w pre-scripcie pobrać potrzebne informacje odnośnie pokemona B, które zapisujemy w zmiennych kolekcji.\n\nNastępnie po wykonaniu zapytania z odpowiedzi pobieramy informacje o pokemonie A, natomiast informacje o pokemonie B ze zmiennych kolekcji. Prostym algorytmem przyznajemy punkty pokemonom, a następnie wyłaniamy zwycięzcę. W nieskomplikowanej wizualizacji przedstawiamy podstawowe informacje o walce."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseUrl",
+			"value": "https://pokeapi.co/api/v2/",
+			"type": "string"
+		},
+		{
+			"key": "amountPokemon",
+			"value": ""
+		},
+		{
+			"key": "pokemonIdA",
+			"value": "1"
+		},
+		{
+			"key": "pokemonIdB",
+			"value": ""
+		},
+		{
+			"key": "hpB",
+			"value": ""
+		},
+		{
+			"key": "attackB",
+			"value": ""
+		},
+		{
+			"key": "defenseB",
+			"value": ""
+		},
+		{
+			"key": "special_attackB",
+			"value": ""
+		},
+		{
+			"key": "special_defenceB",
+			"value": ""
+		},
+		{
+			"key": "speedB",
+			"value": ""
+		},
+		{
+			"key": "nameB",
+			"value": ""
+		},
+		{
+			"key": "urlB",
+			"value": ""
+		}
+	]
+}

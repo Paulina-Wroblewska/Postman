@@ -1,0 +1,745 @@
+{
+	"info": {
+		"_postman_id": "63dcff7c-fc01-474e-91f7-0ff6d1b50aa0",
+		"name": "PokeApi",
+		"description": "**ENG**:\n\nThis collection includes selected requests to [PokeAPI](https://pokeapi.co/docs/v2).  \nIt was created for educational and testing purposes.\n\nEach request contains different tests – we check data structures, variable types, logical conditions, pagination links, and also use response visualization.\n\n**PL**:\n\nTa kolekcja zawiera wybrane zapytania do [PokeAPI](https://pokeapi.co/docs/v2).  \nZostała stworzona w celach edukacyjnych i testowych.\n\nKażde zapytanie zawiera inne testy – sprawdzamy różne struktury danych, typy zmiennych, warunki logiczne, linki paginacyjne, a także dodajemy wizualizację danych.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31286260",
+		"_collection_link": "https://www.postman.com/whiskeyprincess/workspace/portfolio-paulina/collection/31286260-63dcff7c-fc01-474e-91f7-0ff6d1b50aa0?action=share&source=collection_link&creator=31286260"
+	},
+	"item": [
+		{
+			"name": "Pokemon",
+			"item": [
+				{
+					"name": "List All Pokémon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json()\r",
+									"const amountPokemon = response.count\r",
+									"const per_page = parseInt(pm.collectionVariables.get('per_page'))\r",
+									"const start_off = parseInt(pm.collectionVariables.get('start_off'))\r",
+									"const amountPokemonVariable = parseInt(pm.collectionVariables.get('amountPokemon'))\r",
+									"//check correct amount variable\r",
+									"pm.test('Same value number of Pokemon.', function() { \r",
+									"\tpm.expect(amountPokemon).to.eql(amountPokemonVariable);\r",
+									"});\r",
+									"// if we dont have correct 'amountPokemon' change value and check is correct amount\r",
+									"if( amountPokemon !== amountPokemonVariable){\r",
+									"\tpm.collectionVariables.set('amountPokemon',amountPokemon)\r",
+									"\tpm.test('Checking the correct change of the variable number of Pokémon', function() { \r",
+									"\tpm.expect(amountPokemon).to.eql(parseInt(pm.collectionVariables.get('amountPokemon')));\r",
+									"});\r",
+									"}\r",
+									"//corect type 'name'\r",
+									"pm.test(\"Name is string\", () => {\r",
+									"    pm.expect(response.results.name).is.string\r",
+									"})\r",
+									"//count ist not type 'string'\r",
+									"pm.test(\"Count is not string\", () => {\r",
+									"    pm.expect(response.count).is.not.string\r",
+									"})\r",
+									"//verify that the “limit” is working and jesy is taken into account\r",
+									"pm.test(\"Correct number of results returned \", () => {\r",
+									"\tif(start_off >= amountPokemon || start_off<0){\r",
+									"\t\tpm.expect(response.results.length).to.eql(0)\r",
+									"\t}else if(start_off < amountPokemon && start_off+per_page >= amountPokemon){\r",
+									"\t\tpm.expect(response.results.length).to.eql(amountPokemon-start_off)\r",
+									"\t}else {\r",
+									"\t\tpm.expect(response.results.length).to.eql(per_page)\r",
+									"\t}\r",
+									"})\r",
+									"\r",
+									"//verify that the “offset” is working and jesy is taken into account\r",
+									"pm.test(\"Correct start 1st results\", () => {\r",
+									"\tconst first_result = response.results[0]\r",
+									"\tif(start_off >= amountPokemon || start_off < 0){ \r",
+									"\t\tpm.expect(first_result).to.be.undefined\r",
+									"\t}else if(start_off < 1025){\r",
+									"\t\tconst url_parse = first_result.url.split('/')\r",
+									"\t\tpm.expect(parseInt(url_parse[6])).to.eql(start_off+1)\r",
+									"\t\t} else {\r",
+									"\t\tconst url_parse = first_result.url.split('/')\r",
+									"\t\tpm.expect(parseInt(url_parse[6])).to.eql(start_off+8976)\r",
+									"\t\t}\r",
+									"})\r",
+									"\r",
+									"//verifity correct structore for  variable 'results'\r",
+									"pm.test(\"Check correct structure for variable 'results'\", () => {\r",
+									"\tif(start_off<0 || start_off > amountPokemon) {\r",
+									"\t\tpm.expect(response.results[0]).is.undefined\r",
+									"\t}else {\r",
+									"    pm.expect(response).to.have.property(\"results\")\r",
+									"    pm.expect(response.results).to.be.an(\"array\")\r",
+									"    pm.expect(response.results[0]).to.have.property(\"name\")\r",
+									"    pm.expect(response.results[0].name).to.be.a(\"string\")\r",
+									"    pm.expect(response.results[0]).to.have.property(\"url\")\r",
+									"    pm.expect(response.results[0].url).to.be.a(\"string\")\r",
+									"\t}\r",
+									"})\r",
+									"//verifity header response have correct response for \"Content-Type\"\r",
+									"pm.test(\"Header response\", () => {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"})\r",
+									"//verifity 'next' and 'previous' link have correct 'limit' and 'offset'\r",
+									"pm.test(\"Link test 'next'\", () => {\r",
+									"    const next_link = response.next\r",
+									"\t\tif(start_off+per_page > amountPokemon){\r",
+									"\t\t\tpm.expect(next_link).to.eql(null);\r",
+									"\t\t} else if(per_page===0){\r",
+									"\t\t\tconst url_parse = next_link.split(/[\\?=&]/)\r",
+									"    \tconst limitIndex = url_parse.indexOf('limit')\r",
+									"    \tconst offsetInxex = url_parse.indexOf('offset')\r",
+									"\t\t\tpm.expect(parseInt(url_parse[limitIndex+1])).to.eql(20)\r",
+									"\t\t\tpm.expect(parseInt(url_parse[offsetInxex+1])).to.eql(20+start_off)\r",
+									"\t\t} else{\r",
+									"\t\t\tconst url_parse = next_link.split(/[\\?=&]/)\r",
+									"    \tconst limitIndex = url_parse.indexOf('limit')\r",
+									"    \tconst offsetInxex = url_parse.indexOf('offset')\r",
+									"\t\t\tpm.expect(parseInt(url_parse[limitIndex+1])).to.eql(per_page)\r",
+									"\t\t\tpm.expect(parseInt(url_parse[offsetInxex+1])).to.eql(per_page+start_off)\r",
+									"\t\t}\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Link test 'previous\", () => {\r",
+									"\tconst previous_link = response.previous \r",
+									"\tif (start_off<=0) {\r",
+									"\t\tpm.expect(previous_link).to.eql(null);\r",
+									"\t} else if(start_off-per_page<0) {\r",
+									"\t\tconst url_parse = previous_link.split(/[\\?=&]/)\r",
+									"\t\tconst limitIndex = url_parse.indexOf('limit')\r",
+									"    const offsetInxex = url_parse.indexOf('offset')\r",
+									"\t\tpm.expect(parseInt(url_parse[limitIndex+1])).to.eql(start_off)\r",
+									"\t\tpm.expect(parseInt(url_parse[offsetInxex+1])).is.eql(0)\r",
+									"\t} else {\r",
+									"\t\tconst url_parse = previous_link.split(/[\\?=&]/)\r",
+									"\t\tconst limitIndex = url_parse.indexOf('limit')\r",
+									"        const offsetInxex = url_parse.indexOf('offset')\r",
+									"\t\tpm.expect(parseInt(url_parse[limitIndex+1])).to.eql(per_page)\r",
+									"\t\tpm.expect(parseInt(url_parse[offsetInxex+1])).is.eql(start_off-per_page)\r",
+									"\t}\r",
+									"})\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/pokemon?limit={{per_page}}&offset={{start_off}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"pokemon"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "{{per_page}}",
+									"description": "The total number of resources available from this API."
+								},
+								{
+									"key": "offset",
+									"value": "{{start_off}}",
+									"description": "Number of records skipped"
+								}
+							]
+						},
+						"description": "**ENG**:\n\nThis request returns a list of Pokémon using `limit` and `offset` parameters.\n\n- We check if the number of Pokémon matches the collection variable.\n    \n- If not, we update the value and verify the change.\n    \n- We test data types in the response.\n    \n- We check the structure of the `results` list.\n    \n- We validate the `next` and `previous` links.\n    \n\n**PL**:\n\nZapytanie zwraca listę Pokémonów z użyciem parametrów `limit` i `offset`.\n\n- Sprawdzamy, czy liczba Pokémonów zgadza się ze zmienną kolekcji.\n    \n- Jeśli nie – aktualizujemy ją i weryfikujemy zmianę.\n    \n- Testujemy typy danych w odpowiedzi.\n    \n- Sprawdzamy strukturę listy `results`.\n    \n- Walidujemy linki `next` i `previous`."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Random Pokémon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json() \r",
+									"const name = response.name \r",
+									"const height = response.height\r",
+									"const id = response.id\r",
+									"const url = response.sprites.front_default\r",
+									"//create tempalete to visualisation\r",
+									"const template = `\r",
+									"    <style type=\"text/css\">\r",
+									"        .container {\r",
+									"            width: 95%;\r",
+									"            margin: 10px auto;\r",
+									"            background-color: lightpink;\r",
+									"            padding: 10px;\r",
+									"            text-align: center;\r",
+									"        }\r",
+									"\r",
+									"        .row {\r",
+									"            display: flex;\r",
+									"            justify-content: space-around;\r",
+									"            align-items: center;\r",
+									"            gap: 15px; \r",
+									"        }\r",
+									"\r",
+									"        .label {\r",
+									"            font-weight: bold;\r",
+									"            color: red;\r",
+									"            margin: 0;\r",
+									"        }\r",
+									"\r",
+									"        .value {\r",
+									"            color: black;\r",
+									"            margin: 0;\r",
+									"        }\r",
+									"\r",
+									"        table { \r",
+									"            position-align:center;\r",
+									"            background-color:grey;\r",
+									"            margin:  auto;\r",
+									"            padding: 10px;\r",
+									"            border: 8px black double;\r",
+									"            font-size: 20px;\r",
+									"            width:85%;\r",
+									"            border-collapse: collapse;\r",
+									"            \r",
+									"            \r",
+									"        }\r",
+									"        th {\r",
+									"            border: 2px black solid;\r",
+									"            font-size:30px;\r",
+									"            color: pink;\r",
+									"        }\r",
+									"        td {\r",
+									"            border: 2px black solid;\r",
+									"            color: white;\r",
+									"            text-align:center;\r",
+									"            padding: 5px;\r",
+									"        }\r",
+									"    </style>\r",
+									"\r",
+									"    <div class=\"container\">\r",
+									"        <div class=\"row\">\r",
+									"            <p class=\"label\">POKEMON ID:</p>\r",
+									"            <p class=\"value\">{{id}}</p>\r",
+									"            <p class=\"label\">NAME:</p>\r",
+									"            <p class=\"value\">{{name}}</p>\r",
+									"            <p class=\"label\">HEIGHT:</p>\r",
+									"            <p class=\"value\">{{height}}</p>\r",
+									"\r",
+									"        </div>\r",
+									"        </br>\r",
+									"        <img src=\"{{url}}\" alt=\"Pokemon image\" style=\"width: 150px; height: 150px;\">\r",
+									"        <p style=\" color:white; font-size:30px\"> STATS </p>\r",
+									"        <table> \r",
+									"            <tr> \r",
+									"                <th> Name </th>\r",
+									"                <th> Base Stats </th>\r",
+									"                <th> Effort </th> \r",
+									"            </tr> \r",
+									"\r",
+									"            {{#each response.stats}}\r",
+									"\r",
+									"            <tr> \r",
+									"                <td> {{stat.name}} </td> \r",
+									"                <td> {{base_stat}} </td>\r",
+									"                <td> {{effort}} </td> \r",
+									"            </tr>\r",
+									"            {{/each}}\r",
+									"\r",
+									"        </table> \r",
+									"\r",
+									"        <p style=\" color:white; font-size:30px\"> ABILITY </p> \r",
+									"        <table> \r",
+									"            <tr> \r",
+									"                <th> Name Ability </th> \r",
+									"                <th> URL </th> \r",
+									"            </tr> \r",
+									"            {{#each response.abilities}}\r",
+									"            {{log this}}\r",
+									"            <tr> \r",
+									"                <td> {{ability.name}} </td> \r",
+									"                <td> {{ability.url}} </td>\r",
+									"            </tr>\r",
+									"            {{/each}}\r",
+									"        </table>\r",
+									"\r",
+									"    </div>\r",
+									"`;\r",
+									"\r",
+									"// Set visualizer\r",
+									"pm.visualizer.set(template, {\r",
+									"    response: response,\r",
+									"    name: name,\r",
+									"    height: height, \r",
+									"    id:id,\r",
+									"    url: url\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const amountPokemon = parseInt(pm.collectionVariables.get('amountPokemon'))\r",
+									"let randomId = Math.floor(Math.random() * (amountPokemon)) + 1;\r",
+									"if (randomId > 1026) {\r",
+									"randomId = randomId+8976\r",
+									"} \r",
+									"pm.collectionVariables.set('pokemonID',randomId)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}pokemon/{{pokemonID}}",
+							"host": [
+								"{{baseUrl}}pokemon"
+							],
+							"path": [
+								"{{pokemonID}}"
+							]
+						},
+						"description": "**ENG**:\n\nWe check a randomly selected Pokémon.\n\n- Before the request, we generate a random Pokémon ID.\n    \n- After the request, we display the Pokémon's data using an HTML visualizer.\n    \n\n**PL**:\n\nSprawdzamy losowo wybranego Pokémona.\n\n- Przed wysłaniem zapytania losujemy ID Pokémona.\n    \n- Po wykonaniu zapytania wyświetlamy dane Pokémona w formie wizualizacji HTML."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Random Evolution Chain",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// downloading and setting a variable number of evolutions\r",
+									"pm.sendRequest({\r",
+									"    url:'https://pokeapi.co/api/v2/evolution-chain/',\r",
+									"    method:'get',\r",
+									"},(err,res) => {\r",
+									"    const response = res.json()\r",
+									"    const countEvolution = response.count+8\r",
+									"    const randomIdEvolution = Math.floor(Math.random()*countEvolution + 1) \r",
+									"    pm.collectionVariables.set('evolutionID',randomIdEvolution)\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json()\r",
+									"// check correct evolution id\r",
+									"pm.test(\"check correct id\", () => {\r",
+									"    const evolutionID = pm.collectionVariables.get(\"evolutionID\")\r",
+									"    pm.expect(response.id).to.eql(evolutionID)\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}evolution-chain/{{evolutionID}}",
+							"host": [
+								"{{baseUrl}}evolution-chain"
+							],
+							"path": [
+								"{{evolutionID}}"
+							]
+						},
+						"description": "**ENG**:\n\nWe fetch a random evolution chain.\n\n- In the pre-request script, we get the number of evolutions to randomly choose an ID.\n    \n- In the test, we check if the returned response has the correct ID.\n    \n\n**PL**:\n\nPobieramy losowo wybrany łańcuch ewolucji.\n\n- W pre-request wysyłamy zapytanie o liczbę ewolucji, by wylosować ID.\n    \n- W teście sprawdzamy, czy otrzymana odpowiedź ma poprawne ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pikachu Species Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json()\r",
+									"const randomNumber = Math.floor(Math.random()*100)\r",
+									"//releasing the test under the given condition\r",
+									"if(randomNumber%2===0) {\r",
+									"    pm.test(\"this test activates when randomNumber is even \", () => {\r",
+									"        pm.expect(randomNumber%2).is.eql(0)\r",
+									"    })\r",
+									"} else {\r",
+									"    pm.test(\"this test activates when randomNumber is odd \", () => {\r",
+									"        pm.expect(randomNumber%2).is.not.eql(0)\r",
+									"    })\r",
+									"}\r",
+									"//check correct type and not emmpty,null and undefined\r",
+									"pm.test(\"check corect type\", () => {\r",
+									"    pm.expect(response.id).to.be.a(\"number\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.name).to.be.a(\"string\").not.be.empty\r",
+									"    pm.expect(response.order).to.be.a(\"number\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.gender_rate).to.be.a(\"number\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.capture_rate).to.be.a(\"number\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.is_baby).to.be.a(\"boolean\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.is_legendary).to.be.a(\"boolean\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.hatch_counter).to.be.a(\"number\").not.be.null.and.undefined\r",
+									"    pm.expect(response.has_gender_differences).to.be.a(\"boolean\").to.be.not.null.and.undefined\r",
+									"    pm.expect(response.forms_switchable).to.be.a(\"boolean\").to.be.not.null.and.undefined\r",
+									"})\r",
+									"//checking if the response has only the given fields\r",
+									"pm.test(\"response have this field\", () => {\r",
+									"    const field = [\"color\", \"egg_groups\", \"evolution_chain\", \"evolves_from_species\", \"flavor_text_entries\", \"form_descriptions\", \"genera\", \"generation\", \"growth_rate\", \"habitat\",\"names\",\"pal_park_encounters\",\"pokedex_numbers\",\"shape\", \"varieties\"]\r",
+									"    pm.expect(response).to.have.any.keys(field)\r",
+									"})\r",
+									"//check data validation \r",
+									"pm.test(\"is not both legendary and mythical\", () => {\r",
+									"    pm.expect(response.is_legendary && response.is_mythical).to.be.false\r",
+									"})\r",
+									"//check to unique data\r",
+									"pm.test(\"ensure uniqueness of language names and urls in genera\", () => {\r",
+									"    const name = response.genera.map(name => name.language.name)\r",
+									"    const uniqueName = new Set(name)\r",
+									"    pm.expect(name.length).is.equal(uniqueName.size)\r",
+									"    const url = response.genera.map(url => url.language.url)\r",
+									"    const uniqueUrl = new Set(url)\r",
+									"    pm.expect(url.length).is.equal(uniqueUrl.size)\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}pokemon-species/pikachu",
+							"host": [
+								"{{baseUrl}}pokemon-species"
+							],
+							"path": [
+								"pikachu"
+							]
+						},
+						"description": "**ENG**:\n\nInformation about the Pokémon species Pikachu.\n\n- Tests are run based on a random number (even/odd).\n    \n- We validate data types and make sure there are no empty or null values.\n    \n- We check if the response includes all required fields.\n    \n- We verify that the Pokémon is not both legendary and mythical.\n    \n- We check for uniqueness of language names and links.\n    \n\n**PL**:\n\nInformacje o gatunku Pokémona Pikachu.\n\n- Testy uruchamiane są w zależności od wylosowanej liczby (parzysta/nieparzysta).\n    \n- Sprawdzamy poprawność typów danych i brak pustych wartości.\n    \n- Weryfikujemy, czy odpowiedź zawiera wymagane pola.\n    \n- Sprawdzamy, czy Pokémon nie jest jednocześnie legendarny i mityczny.\n    \n- Sprawdzamy unikalność nazw języków i linków."
+					},
+					"response": []
+				},
+				{
+					"name": "Type Pokemon List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json() \r",
+									"const typeCount = response.count \r",
+									"pm.collectionVariables.set('typeCount',typeCount)\r",
+									"//check correct strukture response\r",
+									"pm.test('Correct structure response', () => {\r",
+									"    const expectedSchema = {\r",
+									"        \"type\":\"object\",\r",
+									"        \"properties\": {\r",
+									"            \"count\": {\r",
+									"                \"type\":\"integer\"\r",
+									"            },\r",
+									"            \"next\": {\r",
+									"                \"type\":[\"string\",\"null\"]\r",
+									"            },\r",
+									"            \"previous\": {\r",
+									"                \"type\":[\"string\",\"null\"]\r",
+									"            }, \r",
+									"            \"results\": {\r",
+									"                \"type\":[\"array\",\"null\"],\r",
+									"                \"items\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                        \"name\": {\r",
+									"                            \"type\":\"string\"\r",
+									"                        }, \r",
+									"                        \"url\": {\r",
+									"                            \"type\":\"string\"\r",
+									"                        }\r",
+									"                    },\r",
+									"                \"required\": [\r",
+									"                    \"name\",\r",
+									"                    \"url\"\r",
+									"                ]\r",
+									"                }\r",
+									"            }\r",
+									"        },\r",
+									"        \"required\": [\r",
+									"            \"count\",\r",
+									"            \"next\",\r",
+									"            \"previous\",\r",
+									"            \"results\"\r",
+									"        ]\r",
+									"    }\r",
+									"    pm.response.to.have.jsonSchema(expectedSchema)\r",
+									"})\r",
+									"//checking whether the answer includes specific types\r",
+									"pm.test('check for specific types', () => {\r",
+									"    const wantsType = [\"fire\",\"bug\",\"dark\"]\r",
+									"    const types = response.results.map(type => type.name)\r",
+									"    pm.expect(types).to.include.members(wantsType)\r",
+									"})\r",
+									"// chec for uniqueness of names \r",
+									"pm.test(\"Type name is unique\", () => {\r",
+									"    const typeName = response.results.map(type => type.name)\r",
+									"    const uniqueNames = new Set(typeName)\r",
+									"    pm.expect(typeName.length).to.equal(uniqueNames.size)\r",
+									"} )\r",
+									"//check for the absence of empty varts\r",
+									"pm.test(\"results have no empty values\", () => {\r",
+									"    response.results.forEach(type => {\r",
+									"        pm.expect(type.name).to.not.be.empty;\r",
+									"        pm.expect(type.url).to.not.be.empty;\r",
+									"    })\r",
+									"})\r",
+									"//check that there are no duplicates in the response\r",
+									"pm.test('No duplicates in URLs', () => {\r",
+									"    const urls = response.results.map(type => type.url)\r",
+									"    const uniqueUrls = new Set(urls)\r",
+									"    pm.expect(urls.length).to.equal(uniqueUrls.size)\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}type",
+							"host": [
+								"{{baseUrl}}type"
+							]
+						},
+						"description": "**ENG**:\n\nWe check the types of Pokémon.\n\n- We check whether the response has the correct structure.\n    \n- We verify that the response contains the selected Pokémon types.\n    \n- We ensure that all names are unique.\n    \n- We check that the type name and URL do not contain empty values.\n    \n- We confirm that there are no duplicates in the response.\n    \n\n**PL**:\n\nSprawdzamy typy pokemonów.\n\n- Sprawdzamy czy odpowiedź zawiera poprawną strukturę.\n    \n- Sprawdzamy czy w odpowiedzi znajdują się wybrane typy pokemonów.\n    \n- Sprawdzamy czy wszystkie z nazw są unikalne.\n    \n- Sprawdzamy czy nazwa typu oraz url nie zawierają pustych wartości.\n    \n- Sprawdzamy czy w odpowiedzi nie ma duplikatów"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Random Pokémon Type Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json()\r",
+									"\r",
+									"\r",
+									"pm.test(\"check to resposne have all required fields\", () => {\r",
+									"    const fields = [\"id\", \"name\", \"damage_relations\", \"pokemon\", \"moves\", \"game_indices\",\"generation\",\"move_damage_class\",\"past_damage_relations\", \"sprites\",\"names\"]\r",
+									"    pm.expect(response).to.have.all.keys(fields)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"not empty list\", () => {\r",
+									"    pm.expect(Object.keys(response.sprites).length).to.be.above(0)\r",
+									"    pm.expect(response.pokemon.length).to.be.above(0)\r",
+									"    pm.expect(response.names.length).to.be.above(0)\r",
+									"    pm.expect(response.moves.length).to.be.above(0)\r",
+									"    pm.expect(Object.keys(response.generation).length).to.be.above(0)\r",
+									"    pm.expect(response.game_indices.length).to.be.above(0)\r",
+									"    pm.expect(Object.keys(response.damage_relations).length).to.be.above(0);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"all pokemon has Correct structure\", () => {\r",
+									"    response.pokemon.forEach(pokemons => {\r",
+									"        pm.expect(pokemons).to.have.property(\"pokemon\")\r",
+									"        pm.expect(pokemons.pokemon).to.have.property(\"name\").that.is.a(\"string\")\r",
+									"        pm.expect(pokemons.pokemon).to.have.property(\"url\").that.include(\"https://pokeapi.co/api/v2/pokemon/\")\r",
+									"    })\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Correct structure for damage_relations\", () => {\r",
+									"    const damageRelations = response.damage_relations\r",
+									"    const fields = [\"double_damage_from\",\"double_damage_to\",\"half_damage_from\",\"half_damage_to\",\"no_damage_from\",\"no_damage_to\"]\r",
+									"    pm.expect(damageRelations).to.have.all.keys(fields)\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const typeCount = parseInt(pm.collectionVariables.get('typeCount'))\r",
+									"const randomTypeId = Math.floor(Math.random() * (typeCount)) + 1; \r",
+									"// setting the correct typeID\r",
+									"if (randomTypeId > 19) {\r",
+									"\tpm.collectionVariables.set('typeID',randomTypeId+9981)\r",
+									"} else {\r",
+									"\tpm.collectionVariables.set('typeID',randomTypeId)\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}type/{{typeID}}",
+							"host": [
+								"{{baseUrl}}type"
+							],
+							"path": [
+								"{{typeID}}"
+							]
+						},
+						"description": "**ENG**:\n\nWe get information about a random Pokémon type.\n\n- Before the request, we generate a random type ID.\n    \n- We check if the response includes all required fields and no empty lists.\n    \n- We validate the structure of the Pokémon list for this type.\n    \n- We test the structure of `damage_relations`.\n    \n\n**PL**:\n\nPobieramy informacje o losowym typie Pokémona.\n\n- Przed zapytaniem losujemy ID typu.\n    \n- Sprawdzamy, czy odpowiedź zawiera wymagane pola i żadne nie są puste.\n    \n- Walidujemy strukturę listy Pokémonów danego typu.\n    \n- Sprawdzamy strukturę `damage_relations`."
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"//Check if response time is under 500ms\r",
+							"pm.test(\"Response time is acceptable - from folder\", () => {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Api List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				},
+				"description": "**ENG**:\n\nThis request returns a list of all available endpoints in PokeAPI.\n\n**PL**:\n\nZapytanie zwraca listę wszystkich endpointów dostępnych w PokeAPI."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"//Verify response status code\r",
+					"pm.test(\"Status code is 200 - from collection\", function () {\r",
+					"    pm.response.to.have.status(200); \r",
+					"});\r",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://pokeapi.co/api/v2/",
+			"type": "string"
+		},
+		{
+			"key": "pokemonID",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "amountPokemon",
+			"value": "120",
+			"type": "string"
+		},
+		{
+			"key": "typeCount",
+			"value": "1"
+		},
+		{
+			"key": "typeID",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "per_page",
+			"value": "50",
+			"type": "string"
+		},
+		{
+			"key": "start_off",
+			"value": "20",
+			"type": "string"
+		},
+		{
+			"key": "evolutionID",
+			"value": ""
+		}
+	]
+}

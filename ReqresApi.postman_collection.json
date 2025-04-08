@@ -1,0 +1,816 @@
+{
+	"info": {
+		"_postman_id": "22c2b41a-6de2-4535-9491-b60d659aacce",
+		"name": "ReqresApi",
+		"description": "**ENG:**\n\nTesting queries from [ReqRes](https://reqres.in/).\n\nThis page allows you to use the documentation in **Swagger**.\n\nIt enables testing basic HTTPS methods such as **GET**, **POST**, **PUT**, **PATCH**, and **DELETE**. It also allows configuring request parameters and checking the corresponding responses.  \nEach query includes a test to verify whether it has the correct response code as declared in Swagger.\n\nPL:\n\nTestowanie zapytań z [ReqRes](https://reqres.in/).\n\nStrona ta umożliwia korzystanie z dokumentacji w **Swaggerze**.\n\nUmożliwia testowanie podstawowych metod HTTP, takich jak **GET**, **POST**, **PUT**, **PATCH** oraz **DELETE**.\n\nMożliwa jest konfiguracja parametrów zapytania oraz sprawdzenie odpowiadających im odpowiedzi.  \nKażde zapytanie zawiera test sprawdzający, czy zwrócony kod odpowiedzi jest zgodny z tym deklarowanym w Swaggerze.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31286260",
+		"_collection_link": "https://www.postman.com/whiskeyprincess/workspace/portfolio-paulina/collection/31286260-22c2b41a-6de2-4535-9491-b60d659aacce?action=share&source=collection_link&creator=31286260"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Creates a user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json()\r",
+									"const token = response.token\r",
+									"//Set the appropriate variable to the collection  \r",
+									"pm.collectionVariables.set('token', token)\r",
+									"//Save password from request to collection variable\r",
+									"const request = JSON.parse(pm.request.body.raw)\r",
+									"pm.collectionVariables.set('password', request.password)\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\", \r\n    \"password\": \"{{$randomPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "**ENG**:\n\nWe create a user with a generated password using a variable that provides a random password.  \nThen, we retrieve the token from the response and store it in a collection variable.  \nFrom the sent request, we extract the password value, which is also stored in the collection.\n\nWe have also demonstrated both the correct and incorrect execution of the request along with their responses.\n\n**PL**:\n\nTworzymy użytkownika wraz z wygenerowanym hasłem przy użyciu zmiennej, która zapewnia losowe hasło. Następnie pobieramy token z odpowiedzi i przechowywujemy go w zmiennej kolekcji. Z wysłanego zapytania pobieramy wartość hasła, która jest następnie przechowywana w kolekcji.\n\nZostało zaprezentowane również poprawne oraz niepoprawne wykonanie zapytania wraz z jego odpowiedzią."
+					},
+					"response": [
+						{
+							"name": "400 Bad request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\":\"{{$randomUserName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{$randomPassword}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}register",
+									"host": [
+										"{{baseUrl}}register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 17 Jan 2025 19:01:31 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Report-To",
+									"value": "{\"group\":\"heroku-nel\",\"max_age\":3600,\"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?ts=1737140491&sid=c4c9725f-1ab0-44d8-820f-430df2718e11&s=T%2BoP9fIghEH69HgzJ9phWGYMIOC3AzBlTduXqltfp2g%3D\"}]}"
+								},
+								{
+									"key": "Reporting-Endpoints",
+									"value": "heroku-nel=https://nel.heroku.com/reports?ts=1737140491&sid=c4c9725f-1ab0-44d8-820f-430df2718e11&s=T%2BoP9fIghEH69HgzJ9phWGYMIOC3AzBlTduXqltfp2g%3D"
+								},
+								{
+									"key": "Nel",
+									"value": "{\"report_to\":\"heroku-nel\",\"max_age\":3600,\"success_fraction\":0.005,\"failure_fraction\":0.05,\"response_headers\":[\"Via\"]}"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Etag",
+									"value": "W/\"39-6jrJxn+7f+pQUhbPgNMst7tagpA\""
+								},
+								{
+									"key": "Via",
+									"value": "1.1 vegur"
+								},
+								{
+									"key": "cf-cache-status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "90389824895e62fe-HAM"
+								},
+								{
+									"key": "server-timing",
+									"value": "cfL4;desc=\"?proto=TCP&rtt=26518&min_rtt=20267&rtt_var=13416&sent=35&recv=37&lost=0&retrans=0&sent_bytes=4481&recv_bytes=1099&delivery_rate=144005&cwnd=254&unsent_bytes=0&cid=17fbddbe81e5cbd6&ts=28427&x=0\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Note: Only defined users succeed registration\"\n}"
+						},
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\t\"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}register",
+									"host": [
+										"{{baseUrl}}register"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 17 Jan 2025 19:03:46 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Report-To",
+									"value": "{\"group\":\"heroku-nel\",\"max_age\":3600,\"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?ts=1737140626&sid=c4c9725f-1ab0-44d8-820f-430df2718e11&s=KWTnlpZ24m2%2F3i00%2Fy0Ej8jROdAPmP4LiTGf85t%2Ftj4%3D\"}]}"
+								},
+								{
+									"key": "Reporting-Endpoints",
+									"value": "heroku-nel=https://nel.heroku.com/reports?ts=1737140626&sid=c4c9725f-1ab0-44d8-820f-430df2718e11&s=KWTnlpZ24m2%2F3i00%2Fy0Ej8jROdAPmP4LiTGf85t%2Ftj4%3D"
+								},
+								{
+									"key": "Nel",
+									"value": "{\"report_to\":\"heroku-nel\",\"max_age\":3600,\"success_fraction\":0.005,\"failure_fraction\":0.05,\"response_headers\":[\"Via\"]}"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Etag",
+									"value": "W/\"24-hVGygsFtGWeMvVNQ0QgXh1uPYoE\""
+								},
+								{
+									"key": "Via",
+									"value": "1.1 vegur"
+								},
+								{
+									"key": "cf-cache-status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "90389b703a63ee3c-WAW"
+								},
+								{
+									"key": "server-timing",
+									"value": "cfL4;desc=\"?proto=TCP&rtt=21826&min_rtt=20667&rtt_var=8578&sent=4&recv=5&lost=0&retrans=0&sent_bytes=2803&recv_bytes=670&delivery_rate=141288&cwnd=251&unsent_bytes=0&cid=10586fea73fa2151&ts=126&x=0\""
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"token\": \"QpwL5tke4Pnpja7X3\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Fetches a User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json()\r",
+									"const name = response.data.first_name \r",
+									"const last_name = response.data.last_name\r",
+									"const text = response.support.text\r",
+									"const avatar = response.data.avatar\r",
+									"//Display in the console of the user's preface \r",
+									"console.log(`Hello my name is ${name}. ${name} ${last_name}. Nice to meet you.`)\r",
+									"console.log(text)\r",
+									"//Create visualizer\r",
+									"const template = `\r",
+									"    <style =type=\"text/css\"> \r",
+									"        p {\r",
+									"            text-align:center;\r",
+									"        }\r",
+									"        #welcome{\r",
+									"            background-color:lightblue;\r",
+									"            font-size:24px;\r",
+									"            text-align:center;\r",
+									"            padding:10px;\r",
+									"        }\r",
+									"                .name {\r",
+									"            color: pink;\r",
+									"            font-weight: bold;\r",
+									"        }\r",
+									"        .fullname {\r",
+									"            color: lightpink;\r",
+									"            font-weight: bold;\r",
+									"        }\r",
+									"        img {\r",
+									"            width: 150px; \r",
+									"            height: 150px;\r",
+									"            display:block;\r",
+									"            margin: 0 auto;\r",
+									"        }\r",
+									"    </style>\r",
+									"    <p id=\"welcome\">\r",
+									"        Hello, my name is <span class=\"name\">{{name}} </span>. <span class=\"fullname\"> {{name}} {{surname}}</span>. Nice to meet you.\r",
+									"    </p>\r",
+									"    <p style=\"color:white\"> {{text}}.</p> <br>\r",
+									"    <img src=\"{{avatar}}\" alt=\"photo\">\r",
+									"`\r",
+									"//Visualization call\r",
+									"pm.visualizer.set(template,{\r",
+									"    name: name,\r",
+									"    surname:last_name,\r",
+									"    text: text, \r",
+									"    avatar:avatar\r",
+									"}\r",
+									")\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userID}}"
+							]
+						},
+						"description": "**ENG**:\n\nReturns the data of the selected user. After sending this request, we will see the greeting for the chosen user in the console. Also we can view it along with his picture in the response visualization.\n\n**PL**:\n\nZwraca dane wybranego użytkownika. Po wysłaniu tego zapytania zobaczymy powitanie wybranego użytkownika w konsoli. Możemy je również zobaczyć wraz z jego zdjęciem w wizualizacji odpowiedzi/"
+					},
+					"response": []
+				},
+				{
+					"name": "List User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 200\", ()=>  {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json()\r",
+									"pm.test(\"All users on the site\", () => {\r",
+									"    pm.expect(response.per_page).to.eql(response.total)\r",
+									"})\r",
+									"//Select a randomized user from the list. From 0 - the number of users\r",
+									"const randomUser = Math.floor(Math.random()*(response.total-1))\r",
+									"const email = response.data[randomUser].email; \r",
+									"const userID = response.data[randomUser].id\r",
+									"\r",
+									"//Save email and user id to collection variables \r",
+									"pm.collectionVariables.set(\"email\",email)\r",
+									"pm.collectionVariables.set(\"userID\",userID)\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users?per_page=12",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "12",
+									"description": "Setting to have all users displayed"
+								}
+							]
+						},
+						"description": "**ENG**:\n\nReturns a list of all users. By setting the parameter _per_page:12_.\n\nIn addition, it has a test to see if all users have been called to the site.\n\nAfter executing the request, we _select a random user_ and store their data such as _email_ and _ID_ in collection variables.\n\n**PL**:\n\nZwraca listę wszystkich użytkowników poprzez ustawienie parametru _per_page: 12_.\n\nDodatkowo posiada test sprawdzający czy wszyscy użytkownicy zostali wywołani na stronie.\n\nPo wykonaniu zapytania wybieramy losowego użytkownika i przechowujemy jego dane takie jak _email_ i _ID_ w zmiennych kolekcji."
+					},
+					"response": []
+				},
+				{
+					"name": "Updates a user (PUT)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"const res = pm.response.json();\r",
+									"pm.test(\"Contains expected field\", () => {\r",
+									"    pm.expect(res).to.have.property(\"name\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"updatedName\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Updates a user (PATCH)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"const res = pm.response.json();\r",
+									"pm.test(\"Contains expected field\", () => {\r",
+									"    pm.expect(res).to.have.property(\"name\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"updatedName\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204); \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userID}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userID}}"
+							]
+						},
+						"description": "**ENG**:\n\nRemoval of the resource along with checking the corresponding response code.\n\n**PL**:\n\nUsunięcie zasobu wraz ze sprawdzeniem odpowiedniego kodu."
+					},
+					"response": []
+				}
+			],
+			"description": "**ENG:**  \nRequests related to user management: creation, update, deletion and retrieval.\n\n**PL:**  \nZapytania związane z zarządzaniem użytkownikami: tworzenie, edytowanie, usuwanie i pobieranie.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login (Create Session)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});\r",
+									"//Set token in collection variable\r",
+									"const response = pm.response.json()\r",
+									"const token = response.token\r",
+									"pm.collectionVariables.set('token', token)\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "**ENG**:\n\nFrom the request we get a token, which we write to a collection variable.\n\n**PL**:\n\nZ zapytania otrzymujemy token, który zapisujemy do zmiennej kolekcji."
+					},
+					"response": []
+				},
+				{
+					"name": "Login (FAIL)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check status code \r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400); \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains error\", () => {\r",
+									"    const res = pm.response.json()\r",
+									"    pm.expect(res).to.have.property(\"error\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"email@mail.com\",\r\n  \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "**ENG**:\n\nWe send incorrect login credentials. The response should return a status 400 and an error message.  \n  \n\n**PL**:\n\nWysyłamy niepoprawne dane logowania. Odpowiedź powinna zwrócić kod 400 i komunikat o błędzie."
+					},
+					"response": []
+				}
+			],
+			"description": "**ENG:**  \nUser authentication requests: registration and login.\n\n**PL:**  \nZapytania związane z uwierzytelnianiem użytkowników: rejestracja i logowanie."
+		},
+		{
+			"name": "Resources",
+			"item": [
+				{
+					"name": "Fetches a resource list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Check  status code \r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200); \r",
+									"});\r",
+									"\r",
+									"//Create visualizer\r",
+									"const expectedSchema = {\r",
+									"  \"type\": \"object\", \r",
+									"  \"properties\": {\r",
+									"    \"page\": {\r",
+									"      \"type\": \"integer\"\r",
+									"    },\r",
+									"    \"per_page\": {\r",
+									"      \"type\": \"integer\"\r",
+									"    },\r",
+									"    \"total\": {\r",
+									"      \"type\": \"integer\"\r",
+									"    },\r",
+									"    \"total_pages\": {\r",
+									"      \"type\": \"integer\" \r",
+									"    },\r",
+									"    \"data\": {\r",
+									"      \"type\": \"array\",\r",
+									"      \"items\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"          \"id\": {\r",
+									"            \"type\": \"integer\" \r",
+									"          },\r",
+									"          \"name\": {\r",
+									"            \"type\": \"string\"\r",
+									"          },\r",
+									"          \"year\": {\r",
+									"            \"type\": \"integer\"\r",
+									"          },\r",
+									"          \"color\": {\r",
+									"            \"type\": \"string\"\r",
+									"          },\r",
+									"          \"pantone_value\": {\r",
+									"            \"type\": \"string\"\r",
+									"          }\r",
+									"        },\r",
+									"        \"required\": [\r",
+									"          \"id\",\r",
+									"          \"name\",\r",
+									"          \"year\",\r",
+									"          \"color\",\r",
+									"          \"pantone_value\"\r",
+									"        ]\r",
+									"      }\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\r",
+									"    \"page\",\r",
+									"    \"per_page\",\r",
+									"    \"total\",\r",
+									"    \"total_pages\",\r",
+									"    \"data\"\r",
+									"  ] \r",
+									"};\r",
+									"//Check the correctness of the schema in the response\r",
+									"pm.test('response matches JSON schema', () => {\r",
+									"  pm.response.to.have.jsonSchema(expectedSchema);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/unknown?per_page=12",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unknown"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "12"
+								}
+							]
+						},
+						"description": "**ENG**:\n\nWe verify that the response matches the expected JSON schema.\n\n**PL**:\n\nWeryfikujemy czy odpowiedź, którą otrzymamy ma oczekiwany schemat."
+					},
+					"response": []
+				}
+			],
+			"description": "**ENG:**  \nNon-user related resources such as lists of colors.\n\n**PL:**  \nZasoby niezwiązane z użytkownikami, np. lista kolorów."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.test(\"Response body is not empty\", () => {\r",
+					"    pm.expect(pm.response.text()).to.not.be.empty;\r",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://reqres.in/api",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "eve.holt@reqres.in",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "{{$randomPassword}}",
+			"type": "string"
+		},
+		{
+			"key": "userID",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}
